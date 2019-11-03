@@ -14,9 +14,9 @@ import numpy as np
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 
-class ConnectPage(FloatLayout):
+class ConnectPage(FloatLayout): #FloatLayout Classına acılmıs bir inheritance classı
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(**kwargs) #Float classındaki argümanları burda da kullanmak icin yazılıyor. O argümanlar bu satır tarafından handle ediliyor.
         self.img1=Image(pos=(-425, 0))
         self.add_widget(self.img1)
         Clock.schedule_interval(self.update, 1.0/33.0)
