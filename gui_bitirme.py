@@ -39,7 +39,7 @@ class ConnectPage(FloatLayout):
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         self.capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-        #self.compact_model = load_model('/home/alper/Desktop/CompactCNN/ccnn_keras/ModelWeights/seramik.h5') #model değişecek
+        #self.compact_model = load_model('') #model değişecek
 
     def start_button_act(self, *_):
         print("start butonuna basıldı")
