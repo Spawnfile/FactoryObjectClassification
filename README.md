@@ -20,3 +20,13 @@ Production line is **NOT** working => stop detection and counting (Live Stream k
 (Kivy)
 
 -write a main python code for counting and combine it with NN and import main NN code to use. 
+
+**STRUCTURE**
+
+-Step motor controlling a conveyor belt with raspberry pi
+
+-Raspberry Pi controlled by PC via UDP on same network.
+
+-PC doing detection and send cameras frames to GUI
+
+-GUI showing these frames + controlling conveyor belt for starting and stoping.
