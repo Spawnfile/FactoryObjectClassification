@@ -38,8 +38,8 @@ Production line is **NOT** working => stop detection and counting (Live Stream k
 
 -Do Detection
 
+-Send frames to GUI
+
 -Count Objects -------->1 Thread to push these information to cloud. (Power BI)
 
--Capture Frame
 
--...
