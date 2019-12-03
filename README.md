@@ -30,3 +30,12 @@ Production line is **NOT** working => stop detection and counting (Live Stream k
 -PC doing detection and send cameras frames to GUI
 
 -GUI showing these frames + controlling conveyor belt for starting and stoping.
+
+
+**FlowChart**
+
+-Capture Frame
+-Do Detection
+-Count Objects -------->1 Thread to push these information to cloud. (Power BI)
+-Capture Frame
+-...
