@@ -10,7 +10,8 @@ from kivy.graphics.texture import Texture
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
-
+from webcam import yolo
+from main import main
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
@@ -19,7 +20,7 @@ class ConnectPage(FloatLayout):
         self.add_widget(self.img1)
         Clock.schedule_interval(self.update, 1.0/33.0)
         
-        #Will be added imported from network outpu to show instead of clock and update function.
+        #Will be added imported from network output to show instead of clock and update function.
         self.class_1_count = Label(halign="left", valign="middle", font_size=30, pos_hint={'x':0.22,'y':0.1}) 
         self.class_2_count= Label(halign="left", valign="middle", font_size=30, pos_hint={'x':0.22,'y':0}) 
 
@@ -34,7 +35,7 @@ class ConnectPage(FloatLayout):
         self.button_dur.bind(on_press=self.stop_button_act)
         self.add_widget(self.button_dur)
 
-        self.capture = cv2.VideoCapture(2)
+        #self.capture = cv2.VideoCapture(2)
 
     def start_button_act(self, *_):
         print("start butonuna basıldı")
@@ -53,8 +54,11 @@ class ConnectPage(FloatLayout):
         self.class_2_count.text = str(message_class_2)      
 
     def update(self, dt):
-        ret, frame = self.capture.read()
+        #ret, frame = self.capture.read()
+        _, frame, __, ___ = yolo()
         buf1 = cv2.flip(frame, 0)
+        a = main()
+        print(a)
         buf = buf1.tostring()
         texture1 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
         texture1.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
