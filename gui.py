@@ -11,7 +11,7 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
-from main import main
+from main import Counter
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
@@ -35,11 +35,13 @@ class ConnectPage(FloatLayout):
         self.button_dur.bind(on_press=self.stop_button_act)
         self.add_widget(self.button_dur)
 
+        self.counter = 0
         #self.capture = cv2.VideoCapture(2)
 
     def start_button_act(self, *_):
-        print("start butonuna basıldı")
-        message_class_1 = "start butonu"
+        print("TANINAN OBJE SAYISI")
+        
+        message_class_1 = self.counter
         chat_app.connect_page.count_update_class_1(message_class_1)
         
     def stop_button_act(self, *_):
@@ -48,6 +50,9 @@ class ConnectPage(FloatLayout):
         chat_app.connect_page.count_update_class_2(message_class_2)
     
     def count_update_class_1(self, message_class_1):
+        a = Counter()
+        print(a)
+        message_class_1 = self.counter
         self.class_1_count.text = str(message_class_1)        
 
     def count_update_class_2(self, message_class_2):
@@ -55,10 +60,9 @@ class ConnectPage(FloatLayout):
 
     def update(self, dt):
         #ret, frame = self.capture.read()
-        _, frame, __, ___ = yolo()
+        _, frame = yolo()
+
         buf1 = cv2.flip(frame, 0)
-        a = main()
-        print(a)
         buf = buf1.tostring()
         texture1 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
         texture1.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
