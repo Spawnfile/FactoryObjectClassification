@@ -1,4 +1,9 @@
 from webcam import yolo
+import socket
+
+IP = "192.168.1.32"
+PORT = 8888
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 def cloud(counter):
     #send data to cloud
@@ -19,8 +24,9 @@ def main():
                 
             if detections[0][2][0] > 304 and mod == "Tracking":
                 mod = "Counting"
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 counter += 1
-                Counter()
+                sock.sendto(str(counter).encode(), (IP, PORT))
                 print("Counter: ", counter)
         except:
             print("Waiting..")

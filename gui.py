@@ -11,16 +11,18 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
-from main import Counter
+from threading import Thread
+from multiprocessing import Process
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
         super().__init__(**kwargs) 
         self.img1=Image(size_hint=(0.5, 0.5), pos_hint={'x':0.1 ,'y':0.30})
         self.add_widget(self.img1)
+        self.counter = 0
+        self.mod = None
         Clock.schedule_interval(self.update, 1.0/33.0)
-        
-        #Will be added imported from network output to show instead of clock and update function.
+        print("Class Inits")
         self.class_1_count = Label(halign="left", valign="middle", font_size=30, pos_hint={'x':0.22,'y':0.1}) 
         self.class_2_count= Label(halign="left", valign="middle", font_size=30, pos_hint={'x':0.22,'y':0}) 
 
@@ -35,40 +37,61 @@ class ConnectPage(FloatLayout):
         self.button_dur.bind(on_press=self.stop_button_act)
         self.add_widget(self.button_dur)
 
-        self.counter = 0
-        #self.capture = cv2.VideoCapture(2)
-
     def start_button_act(self, *_):
-        print("TANINAN OBJE SAYISI")
-        
-        message_class_1 = self.counter
-        chat_app.connect_page.count_update_class_1(message_class_1)
-        
+        print("Start Conveyor Belt")            
+
     def stop_button_act(self, *_):
-        print("stop butonuna basıldı")
+        print("Stop Conveyor Belt")
         message_class_2 = "stop butonu"
         chat_app.connect_page.count_update_class_2(message_class_2)
     
-    def count_update_class_1(self, message_class_1):
-        a = Counter()
-        print(a)
-        message_class_1 = self.counter
+    def sayan_fonk(self):
+        self.counter += 1
+        print("cloud icindeki :",self.counter)
+        return self.counter    
+    
+    def count_update_class_1(self, *_):
+        message_class_1 = str(self.counter)
+        print("count fonk ici : ",message_class_1)
+        print("Obje Detect Edildi")
         self.class_1_count.text = str(message_class_1)        
 
     def count_update_class_2(self, message_class_2):
         self.class_2_count.text = str(message_class_2)      
 
     def update(self, dt):
-        #ret, frame = self.capture.read()
-        _, frame = yolo()
-
+        detections, frame = yolo()
+        try:
+            print("Mid Point :",detections[0][2][0]) 
+            if detections[0][2][0] > 50 and detections[0][2][0] < 200:      
+                self.mod = "Tracking"
+                
+            if detections[0][2][0] > 304 and self.mod == "Tracking":
+                self.mod = "Counting"
+                #self.counter += 1
+                self.sayan_fonk()
+                print("sayac: ", self.counter)
+                
+        except:
+            print("Waiting..")
+            pass
+        
+        #print("Update func")
         buf1 = cv2.flip(frame, 0)
         buf = buf1.tostring()
         texture1 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
         texture1.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
         self.img1.texture = texture1
     
-
+    def thread_start(self):
+        try:
+            t = Thread(target = self.thread_udp_read, args=(1,))
+            t.daemon = True #for working forever
+            t.start()
+            print("Thread Başladı")
+        except:
+            print("Threadh baslatılamadı")
+    
 class EpicApp(App):
     def build(self):
         self.screen_manager = ScreenManager()
@@ -80,5 +103,9 @@ class EpicApp(App):
 
 
 if __name__ == "__main__":
+
     chat_app = EpicApp()
+    #connect = ConnectPage()
+    #connect.thread_start()
     chat_app.run()
+
