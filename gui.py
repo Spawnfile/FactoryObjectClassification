@@ -12,7 +12,6 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
 from threading import Thread
-from multiprocessing import Process
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
