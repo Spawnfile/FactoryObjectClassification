@@ -74,7 +74,7 @@ def yolo():
             image, top_left_coordinates, bottom_right_coordinates = cvDrawBoxes(detections, frame_resized)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             #print(1/(time.time()-prev_time))
-            cv2.line(image, line_1_1, line_1_2, (255, 0, 0))
+            #cv2.line(image, line_1_1, line_1_2, (255, 0, 0))
             #cv2.imshow('Demo', image) #comment after testing phase
             cv2.waitKey(3)
             return detections, image

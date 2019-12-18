@@ -12,24 +12,32 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
 from threading import Thread
+from datetime import date
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
         super().__init__(**kwargs) 
+        self.today = str(date.today().strftime("%d.%m.%y"))
+
         self.img1=Image(size_hint=(0.5, 0.5), pos_hint={'x':-0.02 ,'y':0.30})
         self.add_widget(self.img1)
         self.img2=Image(size_hint=(0.5, 0.5), pos_hint={'x':0.5 ,'y':0.30})
         self.add_widget(self.img2)
-
-        self.counter = 0
+        
+        self.makas_counter = 0
+        self.micron_counter = 0
         self.mod = None
         Clock.schedule_interval(self.update, 1.0/33.0)
         print("Class Inits")
         self.class_1_count = Label(markup=True, halign="left", valign="middle", font_size=70, pos_hint={'x':0,'y':-0.1}) 
         self.class_2_count= Label(markup=True, halign="left", valign="middle", font_size=50, pos_hint={'x':0,'y':0.15})
-        self.class_3_count= Label(text="Sayılan Obje",halign="left", valign="middle", font_size=50, pos_hint={'x':0,'y':0})  
+        self.micron_count = Label(markup=True, halign="left", valign="middle", font_size=70, pos_hint={'x':0,'y':-0.3})
+        self.micron= Label(text="Micron Sayısı",halign="left", valign="middle", font_size=50, pos_hint={'x':0,'y':-0.2})
+        self.class_3_count= Label(text="Makas Sayısı",halign="left", valign="middle", font_size=50, pos_hint={'x':0,'y':0})  
         self.class_4_count= Label(text="Bant Durumu",halign="left", valign="middle", font_size=50, pos_hint={'x':0,'y':0.25})  
         
+        self.add_widget(self.micron_count)
+        self.add_widget(self.micron)
         self.add_widget(self.class_3_count)
         self.add_widget(self.class_1_count)
         self.add_widget(self.class_2_count)
@@ -52,35 +60,59 @@ class ConnectPage(FloatLayout):
         print("Stop Conveyor Belt")
         message_class_2 = "[color=FF0000]DURUYOR[/color]"
         chat_app.connect_page.count_update_class_2(message_class_2)
-    
-    def sayan_fonk(self, frame):
-        self.counter += 1
-        print("cloud icindeki :", self.counter)
-        self.class_1_count.text = str(self.counter)
+
+    def count_update_class_2(self, message_class_2):
+        self.class_2_count.text = str(message_class_2)  
+
+    def SaveClass_1(self, frame):
+        #FOR MAKAS CLASS
+        print("Cloud icindeki :", self.makas_counter)       
         buf1 = cv2.flip(frame, 0)
         buf = buf1.tostring()
         texture2 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
         texture2.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
         self.img2.texture = texture2
+        filename = "/home/alper/Desktop/FactoryObjectClassification/dataset/makas/" + str(self.makas_counter) + self.today + ".jpg"
+        print(filename)
+        cv2.imwrite(filename,frame)
         print("resim")
-        return self.counter       
+        return True
 
-    def count_update_class_2(self, message_class_2):
-        self.class_2_count.text = str(message_class_2)      
+    def SaveClass_2(self, frame):
+        #FOR MİCRON CLASS
+        print("Cloud icindeki :", self.micron_counter)       
+        buf1 = cv2.flip(frame, 0)
+        buf = buf1.tostring()
+        texture2 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
+        texture2.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
+        self.img2.texture = texture2
+        filename = "/home/alper/Desktop/FactoryObjectClassification/dataset/micron/" + str(self.micron_counter) + self.today + ".jpg"
+        print(filename)
+        cv2.imwrite(filename,frame)
+        print("resim")
+        return True
 
     def update(self, dt):
         detections, frame = yolo()
         try:
-            print("Mid Point :",detections[0][2][0]) 
-            if detections[0][2][0] > 50 and detections[0][2][0] < 200:      
+            mid_point = detections[0][2][0]
+            name = detections[0][0].decode()
+            print("Mid Point :", mid_point) 
+            if mid_point > 50 and mid_point < 200:      
                 self.mod = "Tracking"
                 
-            if detections[0][2][0] > 304 and self.mod == "Tracking":
+            if mid_point > 304 and self.mod == "Tracking":
                 self.mod = "Counting"
-                #self.counter += 1
-                self.sayan_fonk(frame)
-                print("Counter: ", self.counter)
-                
+                if name == "makas":
+                    self.makas_counter += 1
+                    self.class_1_count.text = str(self.makas_counter)
+                    self.SaveClass_1(frame)
+                    print("Makas Counter: ", self.makas_counter)
+                elif name == "micron":
+                    self.micron_counter += 1
+                    self.micron_count.text = str(self.micron_counter)
+                    self.SaveClass_2(frame)
+                    print("Micron Counter: ", self.micron_counter)
         except:
             print("Waiting..")
             pass
@@ -111,9 +143,7 @@ class EpicApp(App):
         self.screen_manager.add_widget(screen_1)
         return self.screen_manager
 
-
 if __name__ == "__main__":
-
     chat_app = EpicApp()
     chat_app.run()
 
