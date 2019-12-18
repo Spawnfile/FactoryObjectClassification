@@ -13,9 +13,14 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
 from threading import Thread
 from datetime import date
+import socket
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
+
+        self.UDP_IP = "192.168.1.32" 
+        self.UDP_PORT = 8888
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         super().__init__(**kwargs) 
         self.today = str(date.today().strftime("%d.%m.%y"))
 
@@ -53,11 +58,15 @@ class ConnectPage(FloatLayout):
 
     def start_button_act(self, *_):
         print("Start Conveyor Belt")
+        MESSAGE = "Start".encode()
+        self.sock.sendto(MESSAGE, (self.UDP_IP, self.UDP_PORT))
         message_class_2 = "[color=00FF00]ÇALIŞIYOR[/color]"              
         chat_app.connect_page.count_update_class_2(message_class_2)
 
     def stop_button_act(self, *_):
         print("Stop Conveyor Belt")
+        MESSAGE = "Stop".encode()
+        self.sock.sendto(MESSAGE, (self.UDP_IP, self.UDP_PORT))
         message_class_2 = "[color=FF0000]DURUYOR[/color]"
         chat_app.connect_page.count_update_class_2(message_class_2)
 

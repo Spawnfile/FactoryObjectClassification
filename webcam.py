@@ -6,6 +6,11 @@ import cv2
 import numpy as np
 import time
 import darknet
+import socket
+
+UDP_IP = "192.168.1.20" 
+UDP_PORT = 8888
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 configPath = "/home/alper/Desktop/darknet/yolov3-tiny_obj.cfg"
 weightPath = "/home/alper/Desktop/darknet/backup/alper.weights"
