@@ -14,6 +14,7 @@ from webcam import yolo
 from threading import Thread
 from datetime import date
 import socket
+from kivy.core.window import Window
 
 class ConnectPage(FloatLayout): 
     def __init__(self, **kwargs):
@@ -104,7 +105,7 @@ class ConnectPage(FloatLayout):
     def update(self, dt):
         detections, frame = yolo()
         try:
-            mid_point = detections[0][2][0]
+            mid_point = detections[0][2][1]
             name = detections[0][0].decode()
             print("Mid Point :", mid_point) 
             if mid_point > 50 and mid_point < 200:      
@@ -153,6 +154,7 @@ class EpicApp(App):
         return self.screen_manager
 
 if __name__ == "__main__":
+    Window.fullscreen = 'fake'
     chat_app = EpicApp()
     chat_app.run()
 
