@@ -11,7 +11,6 @@ from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen
 from webcam import yolo
-from threading import Thread
 from datetime import date
 import socket
 from kivy.core.window import Window
@@ -127,22 +126,12 @@ class ConnectPage(FloatLayout):
             print("Waiting..")
             pass
         
-        #print("Update func")
         buf1 = cv2.flip(frame, 0)
         buf = buf1.tostring()
         texture1 = Texture.create(size=(buf1.shape[1], buf1.shape[0]), colorfmt='bgr')
         texture1.blit_buffer(buf, colorfmt='bgr', bufferfmt='ubyte')
         self.img1.texture = texture1
         #self.img2.texture = texture1
-    
-    def thread_start(self):
-        try:
-            t = Thread(target = self.thread_udp_read, args=(1,))
-            t.daemon = True #for working forever
-            t.start()
-            print("Thread Started")
-        except:
-            print("Thread Does not Started")
     
 class EpicApp(App):
     def build(self):
